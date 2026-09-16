@@ -7,3 +7,9 @@ const withPWA = require("next-pwa")({
 module.exports = withPWA({
   reactStrictMode: true // o cualquier otra config que ya tengas
 });
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: false, // asegurate de que esté habilitado
+});
