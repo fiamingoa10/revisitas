@@ -8,8 +8,8 @@ export default function Document() {
         {/* Manifest de la PWA */}
         <link rel="manifest" href="/manifest.webmanifest" />
 
-        {/* Ícono/Favicon */}
-        <link rel="icon" href="/__grok/revisitas.png" type="image/png" />
+        {/* Ícono/Favicon: ahora apunta al ícono en public/ */}
+        <link rel="icon" href="/revisitas.png" type="image/png" />
 
         {/* Color de tema (barra superior en móviles) */}
         <meta name="theme-color" content="#000000" />
