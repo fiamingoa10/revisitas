@@ -8,13 +8,13 @@ export default function Document() {
         {/* Manifest de la PWA */}
         <link rel="manifest" href="/manifest.webmanifest" />
 
-        {/* Ícono/Favicon: ahora apunta al ícono en public/ */}
+        {/* Ícono/Favicon */}
         <link rel="icon" href="/revisitas.png" type="image/png" />
 
-        {/* Color de tema (barra superior en móviles) */}
+        {/* Color de tema */}
         <meta name="theme-color" content="#000000" />
 
-        {/* Opcional: descripción de la app */}
+        {/* Descripción opcional */}
         <meta name="description" content="Aplicación Revisitas - PWA" />
       </Head>
       <body>
