@@ -1,15 +1,32 @@
 {
   "name": "Revisitas",
   "short_name": "Revisitas",
-  "start_url": "/?source=pwa",
+  "description": "Cuaderno de revisitas por territorio. 33 territorios, hasta 10 notas personales en cada uno.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "orientation": "portrait",
+  "background_color": "#1E4AA9",
+  "theme_color": "#1E4AA9",
+  "lang": "es",
   "icons": [
     {
-      "src": "/revisitas.png",
-      "sizes": "192x192",
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
