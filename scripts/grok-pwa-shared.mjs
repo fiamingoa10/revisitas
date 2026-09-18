@@ -493,7 +493,7 @@ export function createHeadInjector(ctx = {}) {
 
   const apply = (html) =>
     injectGrokPwaHead(html, {
-      appName: normalized.appName,
+      appName: "Revisitas"
       projectId: normalized.projectId,
       creator: normalized.creator,
       creatorId: normalized.creatorId,
