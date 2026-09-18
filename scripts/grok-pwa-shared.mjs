@@ -66,7 +66,7 @@ export function appNameFromHost(hostHeader) {
     .split(":")[0]
     .toLowerCase();
   if (!host.endsWith(".grok.me")) {
-    return DEFAULT_APP_NAME;
+    return "Revisitas";
   }
   const slug = host.split(".")[0] ?? "";
   if (!slug || slug === "www" || !/^[a-z0-9-]{1,63}$/.test(slug)) {
@@ -153,7 +153,7 @@ export function stripInstallParams(url) {
 
 export function renderInstallPageHtml(template, { host, url } = {}) {
   return String(template)
-    .replaceAll("{{APP_NAME}}", escapeHtml(appNameFromHost(host)))
+    .replaceAll("{{"Revisitas"}}", escapeHtml(appNameFromHost(host)))
     .replaceAll("{{APP_URL}}", escapeHtml(stripInstallParams(url)));
 }
 
@@ -305,9 +305,9 @@ export function resolveOgTitle(
   return "Revisitas";
 
 const fromHost = appNameFromHost(host);
-  if (fromHost && fromHost !== DEFAULT_APP_NAME) return fromHost;
+  if (fromHost && fromHost !== "Revisitas") return fromHost;
   const fromArg = String(appName ?? "").trim();
-  return fromArg || DEFAULT_APP_NAME;
+  return fromArg || "Revisitas";
 }
 }
 export function siteHasCustomCard(site = {}) {
