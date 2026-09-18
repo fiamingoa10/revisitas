@@ -1,5 +1,5 @@
-declare module "virtual:grok-og-identity" {
-  export const grokOgIdentity: {
+ddeclare module "virtual:revisitas-og-identity" {
+  export const revisitasOgIdentity: Record<string, unknown>;
     site: {
       title?: string;
       description?: string;
