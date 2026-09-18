@@ -6,7 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const DEFAULT_APP_NAME = "Grok App";
+export const DEFAULT_APP_NAME = "Revisitas";;
 export const OG_SERVICE_URL_DEFAULT = "https://og.grok.me";
 export const OG_SITE_REL_PATH = "src/lib/og/site.json";
 
@@ -169,42 +169,42 @@ export function renderWebManifest(hostHeader) {
       display: "standalone",
       background_color: "#000000",
       theme_color: "#000000",
-      icons: [
-        {
-          src: "/__grok/icon-180.png",
-          sizes: "180x180",
-          type: "image/png",
-        },
-      ],
-    },
-    null,
-    2,
-  );
-}
+    icons: [
+  {
+    src: "/icon-192.png",
+    sizes: "192x192",
+    type: "image/png",
+  },
+  {
+    src: "/icon-512.png",
+    sizes: "512x512",
+    type: "image/png",
+  },
+],
 
-export function grokPwaHeadTags(appName = DEFAULT_APP_NAME) {
+export function revisitasPwaHeadTags(appName = "Revisitas") {
   return [
-    // Standalone display comes from the manifest ("display": "standalone");
-    // the legacy *-web-app-capable metas it replaces are deliberately absent.
-    ["manifest", '<link rel="manifest" href="/__grok/manifest.webmanifest">'],
-    ["apple-touch-icon", '<link rel="apple-touch-icon" href="/__grok/icon-180.png">'],
+    // Manifest principal
+    ["manifest", '<link rel="manifest" href="/manifest.webmanifest">'],
+
+    // Ícono Apple
+    ["apple-touch-icon", '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'],
+
+    // Nombre de la app
     [
       "apple-mobile-web-app-title",
       `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appName)}">`,
     ],
+
+    // Barra de estado en iOS
     [
       "apple-mobile-web-app-status-bar-style",
       '<meta name="apple-mobile-web-app-status-bar-style" content="black">',
     ],
-    ["theme-color", '<meta name="theme-color" content="#000000">'],
+
+    // Color de tema Revisitas
+    ["theme-color", '<meta name="theme-color" content="#1E4AA9">'],
   ];
-}
-
-export const GROK_EXTENSIONS_SCRIPT_SRC = "https://grok.com/grok-app-builder/extensions.js";
-
-export function readGrokProjectId() {
-  const fromProcess = typeof process !== "undefined" ? process.env?.VITE_PROJECT_ID : "";
-  return String(fromProcess ?? "").trim();
 }
 
 export function readXCreator() {
