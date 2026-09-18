@@ -52,6 +52,7 @@ function serveGrokPwa(middlewares) {
       return;
     }
 
+    /*
     if (pathOnly === "/__grok/manifest.webmanifest" || pathOnly === "/__grok/manifest.json") {
       const body = Buffer.from(renderWebManifest(requestHost(req)), "utf8");
       res.statusCode = 200;
@@ -61,9 +62,10 @@ function serveGrokPwa(middlewares) {
       res.end(body);
       return;
     }
+    */
 
     if (isInstallQuery(rawUrl) && isDocumentPath(pathOnly) && acceptsHtml(req.headers.accept)) {
-      try {
+      // ...      try {
         sendHtml(res, renderInstallPage(requestHost(req), rawUrl));
       } catch (err) {
         console.error("[app-builder] install page missing:", err);
@@ -166,11 +168,12 @@ export function grokPwaPlugin() {
       return `export const grokOgIdentity = ${JSON.stringify(snapshotOgIdentity(root))};`;
     },
     transformIndexHtml(html) {
-      return injectGrokPwaHead(html, {
-        host: process.env.VITE_PUBLIC_HOSTNAME ?? "",
-        cwd: root,
-      });
-    },
+  return injectGrokPwaHead(html, {
+    appName: "Revisitas",
+    host: process.env.VITE_PUBLIC_HOSTNAME ?? "",
+    cwd: root,
+  });
+},
     configureServer(server) {
       // Registered directly (not in a returned post-hook) so both run BEFORE
       // TanStack Start's SSR middleware, like the auth-popup plugin.
