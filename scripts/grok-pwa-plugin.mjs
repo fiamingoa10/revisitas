@@ -18,7 +18,7 @@ import {
   snapshotOgIdentity,
 } from "./grok-pwa-shared.mjs";
 
-export const GROK_OG_IDENTITY_ID = "virtual:grok-og-identity";
+export const REVISITAS_OG_IDENTITY_ID = "virtual:revisitas-og-identity";
 
 const INSTALL_PAGE_PATH = join(dirname(fileURLToPath(import.meta.url)), "install-page.html");
 
@@ -165,7 +165,7 @@ export function grokPwaPlugin() {
     },
     load(id) {
       if (id !== `\0${GROK_OG_IDENTITY_ID}`) return;
-      return `export const grokOgIdentity = ${JSON.stringify(snapshotOgIdentity(root))};`;
+     return `export const revisitasOgIdentity = ${JSON.stringify({ ...snapshotOgIdentity(root), appName: "Revisitas" })};`;
     },
     transformIndexHtml(html) {
   return injectGrokPwaHead(html, {

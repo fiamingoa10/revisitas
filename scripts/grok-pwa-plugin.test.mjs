@@ -21,7 +21,7 @@ manifest: {
 
 test("injects project id on the script and meta when provided", () => {
   const out = injectGrokPwaHead("<html><head></head></html>", {
-    appName: "Demo",
+    appName: "Revisitas",
     projectId: "proj-123",
   });
   assert.match(out, /name="grok-project-id" content="proj-123"/);
@@ -30,7 +30,7 @@ test("injects project id on the script and meta when provided", () => {
 });
 
 test("does not duplicate grok:app_id", () => {
-  const ctx = { appName: "Demo", projectId: "proj-123" };
+  const ctx = { appName: "Revisitas", projectId: "proj-123" };
   const once = injectGrokPwaHead("<html><head></head></html>", ctx);
   const twice = injectGrokPwaHead(once, ctx);
   assert.equal(once, twice);
@@ -41,7 +41,7 @@ test("omits x:creator tags without both creator values", () => {
   assert.deepEqual(grokXCreatorHeadTags("", "42"), []);
   assert.deepEqual(grokXCreatorHeadTags("@alice", ""), []);
   const out = injectGrokPwaHead("<html><head></head></html>", {
-    appName: "Demo",
+    appName: "Revisitas",
     projectId: "",
     creator: "@alice",
     creatorId: "",
@@ -51,7 +51,7 @@ test("omits x:creator tags without both creator values", () => {
 
 test("injects x:creator tags when both creator values are set", () => {
   const out = injectGrokPwaHead("<html><head></head></html>", {
-    appName: "Demo",
+    appName: "Revisitas",
     projectId: "",
     creator: "@alice",
     creatorId: "42",
@@ -73,7 +73,7 @@ test("escapes x:creator values", () => {
 });
 
 test("does not duplicate x:creator tags", () => {
-  const ctx = { appName: "Demo", projectId: "", creator: "@alice", creatorId: "42" };
+  const ctx = { appName: "Revisitas", projectId: "", creator: "@alice", creatorId: "42" };
   const once = injectGrokPwaHead("<html><head></head></html>", ctx);
   const twice = injectGrokPwaHead(once, ctx);
   assert.equal(once, twice);
@@ -360,7 +360,7 @@ test("streaming injector matches </HEAD> case-insensitively", () => {
 });
 
 test("does not duplicate the extensions script", () => {
-  const ctx = { appName: "Demo", projectId: "proj-123" };
+  const ctx = { appName: ""Revisitas"", projectId: "proj-123" };
   const once = injectGrokPwaHead("<html><head></head></html>", ctx);
   const twice = injectGrokPwaHead(once, ctx);
   assert.equal(once, twice);

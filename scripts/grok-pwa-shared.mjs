@@ -6,7 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const DEFAULT_APP_NAME = "Revisitas";;
+export const DEFAULT_APP_NAME = "Revisitas";
 export const OG_SERVICE_URL_DEFAULT = "";
 export const OG_SITE_REL_PATH = "src/lib/og/site.json";
 
