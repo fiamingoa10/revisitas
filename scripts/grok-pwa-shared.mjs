@@ -9,6 +9,7 @@ import { join } from "node:path";
 export const DEFAULT_APP_NAME = "Revisitas";
 export const OG_SERVICE_URL_DEFAULT = "";
 export const OG_SITE_REL_PATH = "src/lib/og/site.json";
+export const REVISITAS_EXTENSIONS_SCRIPT_SRC = "/revisitas-app-builder/extensions.js";
 
 const SHARE_META_KEYS = new Set([
   "og:title",
@@ -47,18 +48,18 @@ function unescapeHtml(value) {
     .replaceAll("&amp;", "&");
 }
 
-/** 6-digit hex for the og.grok.me placeholder, or "" if site.color is missing/invalid. */
+/** 6-digit hex for the og placeholder, or "" if site.color is missing/invalid. */
 function placeholderCardColor(site = {}) {
   const raw = String(site.color ?? "").trim();
   const hex = raw.startsWith("#") ? raw.slice(1) : raw;
   return /^[0-9a-fA-F]{6}$/.test(hex) ? hex : "";
 }
 
-/**
- * "wild-race.grok.me" → "Wild Race". Only published app hosts encode the
- * display name in the first label. Preview / guest hosts are image origins
- * only — slugifying them produced internal names like "Hds Abc 3000 Xy".
- */
+export function readGrokProjectId() {
+  const fromProcess = typeof process !== "undefined" ? process.env?.GROK_PROJECT_ID : "";
+  return String(fromProcess ?? "").trim();
+}
+
 export function appNameFromHost(hostHeader) {
   const host = String(hostHeader ?? "")
     .split(",")[0]
@@ -66,7 +67,7 @@ export function appNameFromHost(hostHeader) {
     .split(":")[0]
     .toLowerCase();
   if (!host.endsWith(".grok.me")) {
-    return "Revisitas";
+    return DEFAULT_APP_NAME;
   }
   const slug = host.split(".")[0] ?? "";
   if (!slug || slug === "www" || !/^[a-z0-9-]{1,63}$/.test(slug)) {
@@ -81,7 +82,6 @@ export function appNameFromHost(hostHeader) {
   );
 }
 
-/** True for Vercel system domains. Envoy rewrites origin Host to these; they SSO-protect `/og.jpg`. */
 function isVercelSystemHost(host) {
   return (
     host === "vercel.app" ||
@@ -91,7 +91,6 @@ function isVercelSystemHost(host) {
   );
 }
 
-/** Hostname suitable for absolute og:image URLs. Preview guests (X-Forwarded-Host) are allowed. */
 export function publicAppHost(hostHeader) {
   const host = String(hostHeader ?? "")
     .split(",")[0]
@@ -104,12 +103,6 @@ export function publicAppHost(hostHeader) {
   return host;
 }
 
-/**
- * Published apps always use `VITE_PUBLIC_HOSTNAME` (the grok.me host the
- * deployer injects). Live preview has no such env, so fall back to the
- * request host / X-Forwarded-Host. Never prefer request Host on a published
- * app — Envoy rewrites it to `*.vercel.app`.
- */
 export function resolvePublicHost(hostHeader) {
   return (
     publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader)
@@ -124,7 +117,6 @@ export function isInstallQuery(url) {
   return (install === "1" || install === "true") && platform === "ios";
 }
 
-/** Paths that can carry an app document (vs assets / API / internals). */
 export function isDocumentPath(pathname) {
   const path = String(pathname ?? "");
   return (
@@ -141,7 +133,6 @@ export function acceptsHtml(accept) {
   return value === "" || value.includes("text/html") || value.includes("*/*");
 }
 
-/** The same URL without the install-tutorial params (used as the app link). */
 export function stripInstallParams(url) {
   const [path = "/", query = ""] = String(url ?? "/").split("?", 2);
   const params = new URLSearchParams(query);
@@ -152,59 +143,53 @@ export function stripInstallParams(url) {
 }
 
 export function renderInstallPageHtml(template, { host, url } = {}) {
+  const appName = appNameFromHost(host) || DEFAULT_APP_NAME;
   return String(template)
-    .replaceAll("{{"Revisitas"}}", escapeHtml(appNameFromHost(host)))
+    .replaceAll("{{APP_NAME}}", escapeHtml(appName))
     .replaceAll("{{APP_URL}}", escapeHtml(stripInstallParams(url)));
 }
 
 export function renderWebManifest(hostHeader) {
-  const name = "Revisitas";
+  const name = DEFAULT_APP_NAME;
   return JSON.stringify(
     {
       name,
       short_name: name,
       id: "/",
-      start_url: "/",      scope: "/",
+      start_url: "/",
+      scope: "/",
       display: "standalone",
       background_color: "#000000",
-      theme_color: "#000000",
-    icons: [
-  {
-    src: "/icon-192.png",
-    sizes: "192x192",
-    type: "image/png",
-  },
-  {
-    src: "/icon-512.png",
-    sizes: "512x512",
-    type: "image/png",
-  },
-],
+      theme_color: "#1E4AA9",
+      icons: [
+        {
+          src: "/icon-192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "/icon-512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    },
+    null,
+    2
+  );
+}
 
-export function revisitasPwaHeadTags(appName = "Revisitas") {
+export function revisitasPwaHeadTags(appName = DEFAULT_APP_NAME) {
   return [
-    // Manifest principal
-    ["manifest", '<link rel="manifest" href="/manifest.webmanifest">'],
-
-    // Ícono Apple
-    ["apple-touch-icon", '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'],
-
-    // Nombre de la app
-    [
-      "apple-mobile-web-app-title",
-      `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appName)}">`,
-    ],
-
-    // Barra de estado en iOS
-    [
-      "apple-mobile-web-app-status-bar-style",
-      '<meta name="apple-mobile-web-app-status-bar-style" content="black">',
-    ],
-
-    // Color de tema Revisitas
-    ["theme-color", '<meta name="theme-color" content="#1E4AA9">'],
+    '<link rel="manifest" href="/manifest.webmanifest">',
+    '<link rel="apple-touch-icon" href="/apple-touch-icon.png">',
+    `<meta name="apple-mobile-web-app-title" content="${escapeHtml(appName)}">`,
+    '<meta name="apple-mobile-web-app-status-bar-style" content="black">',
+    '<meta name="theme-color" content="#1E4AA9">',
   ];
 }
+
+export const grokPwaHeadTags = revisitasPwaHeadTags;
 
 export function readXCreator() {
   const fromProcess = typeof process !== "undefined" ? process.env?.X_CREATOR : "";
@@ -226,20 +211,21 @@ export function grokXCreatorHeadTags(creator = readXCreator(), creatorId = readX
   ];
 }
 
-/** Platform "Created with Grok" banner — injected into every HTML document. */
-export function grokExtensionsHeadTags(projectId = readGrokProjectId()) {
+export function revisitasExtensionsHeadTags(projectId = readGrokProjectId()) {
   const id = escapeHtml(projectId);
   const tags = [];
   if (projectId) {
-    tags.push(`<meta name="grok-project-id" content="${id}">`);
+    tags.push(`<meta name="revisitas-project-id" content="${id}">`);
   }
   tags.push(
-    `<script src="${GROK_EXTENSIONS_SCRIPT_SRC}"${
+    `<script src="${REVISITAS_EXTENSIONS_SCRIPT_SRC}"${
       projectId ? ` data-project-id="${id}"` : ""
-    } defer></script>`,
+    } defer></script>`
   );
   return tags;
 }
+
+export const grokExtensionsHeadTags = revisitasExtensionsHeadTags;
 
 export function readOgSite(cwd = process.cwd()) {
   try {
@@ -251,7 +237,6 @@ export function readOgSite(cwd = process.cwd()) {
   }
 }
 
-/** Public path of an on-disk share card, or "" if neither file exists. */
 export function ogCardPublicPath(cwd = process.cwd()) {
   if (existsSync(join(cwd, "public/og.jpg"))) return "/og.jpg";
   if (existsSync(join(cwd, "public/og.png"))) return "/og.png";
@@ -260,11 +245,9 @@ export function ogCardPublicPath(cwd = process.cwd()) {
 
 function detectCustomOgCard(cwd = process.cwd(), site = {}) {
   if (ogCardPublicPath(cwd)) return true;
-  // Vercel runtime has no public/: trust a bake that already saw the file.
   return siteHasCustomCard(site) || Boolean(String(site.image ?? "").trim());
 }
 
-/** Snapshot for Vite/Nitro to bake into the server bundle (Vercel has no workspace FS). */
 export function snapshotOgIdentity(cwd = process.cwd()) {
   const site = { ...readOgSite(cwd) };
   const disk = ogCardPublicPath(cwd);
@@ -272,7 +255,6 @@ export function snapshotOgIdentity(cwd = process.cwd()) {
     site.card = "custom";
     site.image = disk;
   } else {
-    // site.json `card=custom` without a file must not bake a 404 /og.jpg URL.
     if (siteHasCustomCard(site)) delete site.card;
     if (site.image) delete site.image;
   }
@@ -298,32 +280,27 @@ export function titleFromDocument(html) {
 
 export function resolveOgTitle(
   site = {},
-  appName = "Revisitas",
+  appName = DEFAULT_APP_NAME,
   host = "",
-  documentTitle = "",
+  documentTitle = ""
 ) {
-  return "Revisitas";
-
-const fromHost = appNameFromHost(host);
-  if (fromHost && fromHost !== "Revisitas") return fromHost;
+  const fromHost = appNameFromHost(host);
+  if (fromHost && fromHost !== DEFAULT_APP_NAME) return fromHost;
   const fromArg = String(appName ?? "").trim();
-  return fromArg || "Revisitas";
+  return fromArg || DEFAULT_APP_NAME;
 }
-}
+
 export function siteHasCustomCard(site = {}) {
   return String(site.card ?? "").toLowerCase() === "custom";
 }
 
-/**
- * Preview: public/og.jpg|png on disk.
- * Vercel: the bake (`card=custom` / `image`) because the function cannot stat public/.
- * Otherwise empty — caller emits the og.grok.me placeholder.
- */
 export function resolveOgCardAsset(site = {}, cwd = process.cwd()) {
-  return ogCardPublicPath(cwd) || (detectCustomOgCard(cwd, site) ? String(site.image ?? "").trim() || "/og.jpg" : "");
+  return (
+    ogCardPublicPath(cwd) ||
+    (detectCustomOgCard(cwd, site) ? String(site.image ?? "").trim() || "/og.jpg" : "")
+  );
 }
 
-/** Stamp `card=custom` when public/og.jpg or public/og.png is on disk. */
 function applyCustomCardFromFs(site, cwd) {
   const disk = ogCardPublicPath(cwd);
   if (!disk) return site;
@@ -399,13 +376,9 @@ function insertBeforeHeadClose(html, snippet) {
 
 export function normalizeHeadContext(ctx = {}) {
   const cwd = ctx.cwd ?? process.cwd();
-  // Middleware passes a baked `site`. Still consult the workspace so a
-  // public/og.jpg generated after that snapshot (or missed by a wrong cwd)
-  // wins over the og.grok.me placeholder. Vercel has no public/ to read, so
-  // a correct bake is unchanged.
   const site = applyCustomCardFromFs(
     ctx.site !== undefined ? ctx.site : snapshotOgIdentity(cwd).site,
-    cwd,
+    cwd
   );
   const appName = resolveOgTitle(site, ctx.appName ?? DEFAULT_APP_NAME, ctx.host ?? "");
   return {
@@ -427,37 +400,38 @@ export function injectGrokPwaHead(html, ctx = {}) {
     site,
     ctx.appName ?? DEFAULT_APP_NAME,
     host,
-    documentTitle,
+    documentTitle
   );
   let next = stripShareMetaTags(html);
 
-  const missing = grokPwaHeadTags(appName)
-    .filter(([key]) => {
-     if (key === "manifest")
-  return !next.includes('href="/manifest.webmanifest"');
-
-if (key === "apple-touch-icon")
-  return !next.includes('href="/icon-192.png"');
-    })
-    .map(([, tag]) => tag);
+  const missing = grokPwaHeadTags(appName).filter((tag) => {
+    if (tag.includes('rel="manifest"')) {
+      return !next.includes('href="/manifest.webmanifest"');
+    }
+    if (tag.includes('rel="apple-touch-icon"')) {
+      return !next.includes('href="/apple-touch-icon.png"');
+    }
+    return true;
+  });
 
   next = insertAfterHeadOpen(
     next,
-    grokOgHeadTags({ host, appName, site, documentTitle, cwd }).join(""),
+    grokOgHeadTags({ host, appName, site, documentTitle, cwd }).join("")
   );
 
-  if (!next.includes("/grok-app-builder/extensions.js")) {
-    missing.push(...grokExtensionsHeadTags(projectId));
-  } else if (projectId && !next.includes('name="grok-project-id"')) {
-    missing.push(`<meta name="grok-project-id" content="${escapeHtml(projectId)}">`);
+  if (!next.includes(REVISITAS_EXTENSIONS_SCRIPT_SRC)) {
+    missing.push(...revisitasExtensionsHeadTags(projectId));
+  } else if (projectId && !next.includes('name="revisitas-project-id"')) {
+    missing.push(`<meta name="revisitas-project-id" content="${escapeHtml(projectId)}">`);
   }
   if (
     projectId &&
-    !next.includes('property="grok:app_id"') &&
-    !next.includes("property='grok:app_id'")
+    !next.includes('property="revisitas:app_id"') &&
+    !next.includes("property='revisitas:app_id'")
   ) {
-    missing.push(`<meta property="grok:app_id" content="${escapeHtml(projectId)}">`);
+    missing.push(`<meta property="revisitas:app_id" content="${escapeHtml(projectId)}">`);
   }
+
   const creatorTags = grokXCreatorHeadTags(creator, creatorId);
   if (creatorTags.length > 0) {
     const hasCreator =
@@ -476,11 +450,6 @@ function findHeadClose(buf) {
   return at;
 }
 
-/**
- * Streaming head injector: buffers only until `</head>` (ASCII marker; never
- * appears inside a UTF-8 continuation byte), overwrites share-card metas,
- * then passes later chunks through so streaming SSR keeps streaming.
- */
 export function createHeadInjector(ctx = {}) {
   const normalized = normalizeHeadContext(ctx);
 
@@ -490,7 +459,7 @@ export function createHeadInjector(ctx = {}) {
 
   const apply = (html) =>
     injectGrokPwaHead(html, {
-      appName: "Revisitas"
+      appName: DEFAULT_APP_NAME,
       projectId: normalized.projectId,
       creator: normalized.creator,
       creatorId: normalized.creatorId,
@@ -500,7 +469,6 @@ export function createHeadInjector(ctx = {}) {
     });
 
   return {
-    /** @param {Uint8Array | string} chunk @returns {Buffer[]} chunks ready to emit */
     push(chunk) {
       const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
       if (done) return [buf];
@@ -514,7 +482,6 @@ export function createHeadInjector(ctx = {}) {
       const head = apply(joined.subarray(0, at + closeLen).toString("utf8"));
       return [Buffer.concat([Buffer.from(head, "utf8"), joined.subarray(at + closeLen)])];
     },
-    /** @returns {Buffer[]} whatever is still buffered (no `</head>` seen) */
     flush() {
       if (done || pending.length === 0) return [];
       const rest = Buffer.concat(pending);
