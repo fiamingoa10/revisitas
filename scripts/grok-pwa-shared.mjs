@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export const DEFAULT_APP_NAME = "Revisitas";;
-export const OG_SERVICE_URL_DEFAULT = "https://og.grok.me";
+export const OG_SERVICE_URL_DEFAULT = "";
 export const OG_SITE_REL_PATH = "src/lib/og/site.json";
 
 const SHARE_META_KEYS = new Set([
@@ -158,14 +158,13 @@ export function renderInstallPageHtml(template, { host, url } = {}) {
 }
 
 export function renderWebManifest(hostHeader) {
-  const name = appNameFromHost(hostHeader);
+  const name = "Revisitas";
   return JSON.stringify(
     {
       name,
       short_name: name,
       id: "/",
-      start_url: "/",
-      scope: "/",
+      start_url: "/",      scope: "/",
       display: "standalone",
       background_color: "#000000",
       theme_color: "#000000",
@@ -299,20 +298,18 @@ export function titleFromDocument(html) {
 
 export function resolveOgTitle(
   site = {},
-  appName = DEFAULT_APP_NAME,
+  appName = "Revisitas",
   host = "",
   documentTitle = "",
 ) {
-  const fromSite = String(site.title ?? "").trim();
-  if (fromSite) return fromSite;
-  const fromDoc = String(documentTitle ?? "").trim();
-  if (fromDoc) return fromDoc;
-  const fromHost = appNameFromHost(host);
+  return "Revisitas";
+
+const fromHost = appNameFromHost(host);
   if (fromHost && fromHost !== DEFAULT_APP_NAME) return fromHost;
   const fromArg = String(appName ?? "").trim();
   return fromArg || DEFAULT_APP_NAME;
 }
-
+}
 export function siteHasCustomCard(site = {}) {
   return String(site.card ?? "").toLowerCase() === "custom";
 }
