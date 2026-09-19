@@ -4,8 +4,8 @@ export default function Document() {
   return (
     <Html lang="es">
       <Head>
-        <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="icon" href="/revisitas.png" type="image/png" />
+        /manifest.webmanifest
+        /revisitas.png
         <meta name="theme-color" content="#000000" />
       </Head>
       <body>
