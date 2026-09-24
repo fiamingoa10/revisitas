@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 
-const HomeApp = dynamic(() => import('@/src/HomeApp'), {
+const HomeApp = dynamic(() => import('@/HomeApp'), {
   ssr: false,
 });
 
