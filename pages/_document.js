@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="es">
       <Head>
         /manifest.webmanifest
-        /revisitas.png
+        <linksitas.png
         <meta name="theme-color" content="#000000" />
       </Head>
       <body>
