@@ -204,3 +204,6 @@ function summarize(notesByTerritory: Record<string, Note[]>) {
 }
 
 export default Home;
+export async function getServerSideProps() {
+  return { props: {} };
+}
