@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPinned, Search } from "lucide-react";
