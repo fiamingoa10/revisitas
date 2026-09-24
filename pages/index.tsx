@@ -200,3 +200,5 @@ function summarize(notesByTerritory: Record<string, Note[]>) {
   }
   return { pending, done, active };
 }
+
+export default Home;
