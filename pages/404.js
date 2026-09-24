@@ -1,2 +1,3 @@
 export default function Custom404() {
-  return
+  return "404 - Pagina no encontrada";
+}
