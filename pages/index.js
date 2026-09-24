@@ -1,3 +1,3 @@
 export default function Home() {
-  return "Aplicacion en linea";
+  return <h1>Aplicacion en linea</h1>;
 }
