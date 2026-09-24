@@ -2,16 +2,21 @@ import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
-    <Html lang="es">
-      <Head>
-        /manifest.webmanifest
-        <linksitas.png
-        <meta name="theme-color" content="#000000" />
-      </Head>
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
+    
+      
+        {/* Manifest para PWA */}
+        
+
+        {/* Ícono de la aplicación (favicon) */}
+        
+
+        {/* Color de la barra del navegador */}
+        
+      
+      
+        
+        
+      
+    
   );
 }
