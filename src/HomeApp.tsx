@@ -1,3 +1,4 @@
+cat << 'EOF' > src/HomeApp.tsx
 import { useMemo, useState } from "react";
 import { MapPinned, Search } from "lucide-react";
 import { TerritoryTile } from "@/components/territory-tile";
@@ -39,7 +40,7 @@ export default function HomeApp() {
       if (String(id).includes(q)) return true;
       return notes.some(
         (n) =>
-          n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q),
+          n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
       );
     });
   }, [notesByTerritory, query, filter]);
