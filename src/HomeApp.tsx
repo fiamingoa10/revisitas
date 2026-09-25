@@ -1,4 +1,3 @@
-cat << 'EOF' > src/HomeApp.tsx
 import { useMemo, useState } from "react";
 import { MapPinned, Search } from "lucide-react";
 import { TerritoryTile } from "@/components/territory-tile";
