@@ -18,7 +18,7 @@ const FILTERS: { id: FilterId; label: string }[] = [
 
 export default function HomeApp() {
   const notesByTerritory = useRevisitasStore((s) => s.notesByTerritory);
-  const [query, setQuery] = useState("");
+ const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
 
   const stats = useMemo(() => summarize(notesByTerritory), [notesByTerritory]);
