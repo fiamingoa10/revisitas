@@ -1,7 +1,7 @@
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
-export const TERRITORY_COUNT = 33;
+export const TERRITORY_COUNT = 36;
 export const MAX_NOTES = 10;
 export const TERRITORY_IDS = Array.from(
   { length: TERRITORY_COUNT },
