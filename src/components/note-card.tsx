@@ -1,4 +1,4 @@
-import { CalendarDays, Pencil, Trash2 } from "lucide-react";
+import { CalendarDays, MapPin, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -58,6 +58,12 @@ export function NoteCard({
               </Button>
             </div>
           </div>
+          {note.address ? (
+            <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground">
+              <MapPin className="mt-0.5 size-3.5 shrink-0" />
+              <span>{note.address}</span>
+            </p>
+          ) : null}
           {note.body ? (
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
               {note.body}

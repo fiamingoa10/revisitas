@@ -33,6 +33,7 @@ export function NoteEditor({
 }: NoteEditorProps) {
   const isEdit = Boolean(note);
   const [title, setTitle] = useState("");
+  const [address, setAddress] = useState("");
   const [body, setBody] = useState("");
   const [done, setDone] = useState(false);
   const [doneAt, setDoneAt] = useState(todayISO());
@@ -41,6 +42,7 @@ export function NoteEditor({
   useEffect(() => {
     if (!open) return;
     setTitle(note?.title ?? "");
+    setAddress(note?.address ?? "");
     setBody(note?.body ?? "");
     setDone(note?.done ?? false);
     setDoneAt(note?.doneAt ?? todayISO());
@@ -60,6 +62,7 @@ export function NoteEditor({
     }
     onSave({
       title,
+      address,
       body,
       done,
       doneAt: done ? doneAt || todayISO() : null,
@@ -81,7 +84,7 @@ export function NoteEditor({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="note-title">Nombre o dirección</Label>
+            <Label htmlFor="note-title">Nombre</Label>
             <Input
               id="note-title"
               value={title}
@@ -89,19 +92,29 @@ export function NoteEditor({
                 setTitle(e.target.value);
                 if (error) setError(false);
               }}
-              placeholder="Ej. Familia López, calle 12 n.º 8"
+              placeholder="Ej. Familia López"
               autoFocus
               aria-invalid={error || undefined}
               maxLength={80}
             />
             {error ? (
               <p className="text-sm text-destructive">
-                Añade un nombre o una referencia.
+                Añade un nombre.
               </p>
             ) : null}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="note-body">Notas personales</Label>
+            <Label htmlFor="note-address">Dirección</Label>
+            <Input
+              id="note-address"
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
+              placeholder="Ej. Calle 12 n.º 8"
+              maxLength={120}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="note-body">Notas</Label>
             <Textarea
               id="note-body"
               value={body}

@@ -5,6 +5,7 @@ import { MAX_NOTES, todayISO } from "@/lib/territories";
 export type Note = {
   id: string;
   title: string;
+  address?: string;
   body: string;
   done: boolean;
   doneAt: string | null;
@@ -14,6 +15,7 @@ export type Note = {
 
 export type NoteInput = {
   title: string;
+  address: string;
   body: string;
   done: boolean;
   doneAt: string | null;
@@ -40,15 +42,17 @@ function newId(): string {
   return `n_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function normalize(data: NoteInput): Omit<NoteInput, "title" | "body"> & {
+function normalize(data: NoteInput): Omit<NoteInput, "title" | "address" | "body"> & {
   title: string;
+  address: string;
   body: string;
 } {
   const title = data.title.trim();
+  const address = (data.address ?? "").trim();
   const body = data.body.trim();
   const done = data.done;
   const doneAt = done ? (data.doneAt || todayISO()) : null;
-  return { title, body, done, doneAt };
+  return { title, address, body, done, doneAt };
 }
 
 export const useRevisitasStore = create<RevisitasState>()(

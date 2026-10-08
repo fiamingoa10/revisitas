@@ -42,7 +42,9 @@ function Home() {
       if (String(id).includes(q)) return true;
       return notes.some(
         (n) =>
-          n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q),
+          n.title.toLowerCase().includes(q) ||
+          (n.address ?? "").toLowerCase().includes(q) ||
+          n.body.toLowerCase().includes(q),
       );
     });
   }, [notesByTerritory, query, filter]);
