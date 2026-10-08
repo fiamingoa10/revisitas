@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { MAX_NOTES, TERRITORY_COUNT } from "@/lib/territories";
+import { MapPinned } from "lucide-react";
+import { useRevisitasStore } from "@/lib/store";
 
 export const Route = createFileRoute("/mapa")({
   component: MapaPage,
@@ -188,6 +191,49 @@ const territorios = [
 ];
 
 function MapaPage() {
+  const notesByTerritory = useRevisitasStore(
+    (state) => state.notesByTerritory,
+  );
+
+  const mapStats = Object.values(notesByTerritory).reduce(
+    (result, notes) => {
+      if (notes.length > 0) {
+        result.active += 1;
+      }
+
+      for (const note of notes) {
+        if (note.done) {
+          result.done += 1;
+        } else {
+          result.pending += 1;
+        }
+      }
+
+      return result;
+    },
+    {
+      pending: 0,
+      done: 0,
+      active: 0,
+    },
+  );
+
+  function getTerritoryColor(territoryId: number): string {
+    const notes = notesByTerritory[String(territoryId)] ?? [];
+
+    if (notes.length === 0) {
+      return "#111827";
+    }
+
+    const hasPending = notes.some((note) => !note.done);
+
+    if (hasPending) {
+      return "#eab308";
+    }
+
+    return "#22c55e";
+  }
+
   return (
     <div
       style={{
@@ -196,14 +242,120 @@ function MapaPage() {
         margin: "0 auto",
       }}
     >
-      <h1
+      
+      <nav
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "4px",
+          padding: "4px",
+          marginBottom: "20px",
+          borderRadius: "12px",
+          backgroundColor: "#e7e1d5",
+        }}
+        aria-label="Vistas principales"
+      >
+        <Link
+          to="/"
+          style={{
+            padding: "10px 16px",
+            borderRadius: "8px",
+            color: "#6b675f",
+            textAlign: "center",
+            textDecoration: "none",
+            fontSize: "14px",
+            fontWeight: 600,
+          }}
+        >
+          Territorios
+        </Link>
+
+        <Link
+          to="/mapa"
+          style={{
+            padding: "10px 16px",
+            borderRadius: "8px",
+            backgroundColor: "white",
+            color: "#1f2937",
+            textAlign: "center",
+            textDecoration: "none",
+            fontSize: "14px",
+            fontWeight: 600,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12)",
+          }}
+        >
+          Mapa
+        </Link>
+      </nav>
+
+
+      <header className="mb-8 flex flex-col gap-5">
+        <div className="flex items-start gap-3">
+          <span className="mt-1 flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lift">
+            <MapPinned className="size-5" strokeWidth={1.75} />
+          </span>
+
+          <div className="min-w-0">
+            <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+              Cuaderno de campo
+            </p>
+
+            <h1 className="font-display text-4xl font-medium tracking-tight text-foreground sm:text-5xl">
+              Revisitas
+            </h1>
+
+            <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {TERRITORY_COUNT} territorios. Hasta {MAX_NOTES} notas
+              personales en cada uno, con fecha cuando la visita se completa.
+            </p>
+          </div>
+        </div>
+
+        <dl className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="rounded-xl bg-card px-3 py-3 shadow-lift sm:px-4 sm:py-4">
+            <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Pendientes
+            </dt>
+
+            <dd className="mt-1 font-display text-2xl leading-none tracking-tight tabular-nums sm:text-3xl">
+              {mapStats.pending}
+            </dd>
+          </div>
+
+          <div className="rounded-xl bg-card px-3 py-3 shadow-lift sm:px-4 sm:py-4">
+            <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Realizadas
+            </dt>
+
+            <dd className="mt-1 font-display text-2xl leading-none tracking-tight tabular-nums sm:text-3xl">
+              {mapStats.done}
+            </dd>
+          </div>
+
+          <div className="rounded-xl bg-card px-3 py-3 shadow-lift sm:px-4 sm:py-4">
+            <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Territorios
+            </dt>
+
+            <dd className="mt-1 font-display text-2xl leading-none tracking-tight tabular-nums sm:text-3xl">
+              {mapStats.active}
+              <span className="ml-1 text-base text-muted-foreground">
+                / {TERRITORY_COUNT}
+              </span>
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <h2
         style={{
           fontSize: "28px",
           marginBottom: "20px",
+          fontWeight: 600,
         }}
       >
         Mapa de Territorios
-      </h1>
+      </h2>
 
       <div
         style={{
@@ -241,7 +393,7 @@ function MapaPage() {
               padding: 0,
               borderRadius: "50%",
               border: "3px solid white",
-              backgroundColor: "#111827",
+              backgroundColor: getTerritoryColor(territorio.id),
               color: "white",
               fontSize: "15px",
               fontWeight: 700,

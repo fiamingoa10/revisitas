@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as TerritorioIdRouteImport } from './routes/territorio.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapaRoute = MapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TerritorioIdRoute = TerritorioIdRouteImport.update({
@@ -25,27 +31,31 @@ const TerritorioIdRoute = TerritorioIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mapa': typeof MapaRoute
   '/territorio/$id': typeof TerritorioIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mapa': typeof MapaRoute
   '/territorio/$id': typeof TerritorioIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/mapa': typeof MapaRoute
   '/territorio/$id': typeof TerritorioIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/territorio/$id'
+  fullPaths: '/' | '/mapa' | '/territorio/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/territorio/$id'
-  id: '__root__' | '/' | '/territorio/$id'
+  to: '/' | '/mapa' | '/territorio/$id'
+  id: '__root__' | '/' | '/mapa' | '/territorio/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MapaRoute: typeof MapaRoute
   TerritorioIdRoute: typeof TerritorioIdRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mapa': {
+      id: '/mapa'
+      path: '/mapa'
+      fullPath: '/mapa'
+      preLoaderRoute: typeof MapaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/territorio/$id': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MapaRoute: MapaRoute,
   TerritorioIdRoute: TerritorioIdRoute,
 }
 export const routeTree = rootRouteImport

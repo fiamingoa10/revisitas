@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPinned, Search } from "lucide-react";
 import { TerritoryTile } from "@/components/territory-tile";
 import { Input } from "@/components/ui/input";
@@ -79,6 +79,26 @@ function Home() {
             />
           </dl>
         </header>
+
+
+        <nav
+          className="grid grid-cols-2 gap-1 rounded-xl bg-secondary p-1"
+          aria-label="Vistas principales"
+        >
+          <Link
+            to="/"
+            className="rounded-lg bg-card px-4 py-2.5 text-center text-sm font-medium text-foreground shadow-lift"
+          >
+            Territorios
+          </Link>
+
+          <Link
+            to="/mapa"
+            className="rounded-lg px-4 py-2.5 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Mapa
+          </Link>
+        </nav>
 
         <section
           className="flex flex-col gap-4"
